@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>TIKTOK : NEXUSAN</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;font-family:Poppins}
+body{
+  margin:0;
+  min-height:100vh;
+  background:#121212;
+  color:#ffffff;
+  overflow:hidden;
+}
+
+/* KABUT CSS MURNI (ANTI ERROR) */
+body::before, body::after{
+  content:"";
+  position:fixed;
+  inset:-50%;
+  background:
+    radial-gradient(circle at 30% 40%,rgba(255,151,0,.15),transparent 60%),
+    radial-gradient(circle at 70% 60%,rgba(255,151,0,.1),transparent 60%);
+  animation:fog 45s linear infinite;
+  pointer-events:none;
+}
+body::after{
+  animation-duration:70s;
+  animation-direction:reverse;
+}
+@keyframes fog{
+  to{transform:translateX(50%)}
+}
+
+/* LAYOUT */
+.page{
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.card{
+  width:380px;
+  max-height:90vh;
+  background:#2a2a2a;
+  border:2px solid #FF9700;
+  border-radius:22px;
+  padding:22px;
+  box-shadow:0 0 28px #FF9700;
+  
+  position: relative;
+  z-index: 5;
+}
+h2{
+  text-align:center;
+  color:#FF9700;
+  margin-bottom:12px;
+}
+
+input,button{
+  width:100%;
+  padding:12px;
+  border-radius:14px;
+  border:2px solid #FF9700;
+  background:#121212;
+  color:#ffffff;
+  outline:none;
+  margin-top:10px;
+}
+button{
+  background:#FF9700;
+  color:#121212;
+  font-weight:700;
+  cursor:pointer;
+}
+
+/* NOTIF */
+.notif{
+  margin-top:12px;
+  padding:12px;
+  border-radius:14px;
+  display:none;
+  text-align:center;
+  font-size:13px;
+}
+.ok{
+  background:#2a2a2a;
+  color:#FF9700;
+  border:2px solid #FF9700;
+}
+.err{
+  background:#2A2A2A;
+  color:#FF9700;
+  border:1px solid #FF9700;
+}
+
+/* JUMLAH PLAYER REBUTAN KEY SEKARANG */
+#playerCount{
+  margin-top:12px;
+  padding:12px;
+  border-radius:14px;
+  background:#2a2a2a;
+  border:2px solid #FF9700;
+  text-align:center;
+  font-size:12px;
+  color:#FF9700;
+  font-weight:600;
+}
+#playerCount span{
+  color:#ffffff;
+  font-weight:700;
+}
+
+/* KEY */
+.keys{
+  max-height:360px;
+  overflow-y:auto;
+  margin-top:10px;
+}
+.keys::-webkit-scrollbar{width:6px}
+.keys::-webkit-scrollbar-thumb{
+  background:#FF9700;
+  border-radius:6px;
+}
+.key{
+  display:flex;
+  gap:10px;
+  align-items:center;
+  background:#121212;
+  border:1px solid #FF9700;
+  padding:12px;
+  border-radius:14px;
+  margin-bottom:10px;
+}
+.key span{
+  font-size:12px;
+  word-break:break-all;
+  color:#ffffff;
+}
+.key button{
+  width:auto;
+  padding:6px 12px;
+  font-size:12px;
+  background:#FF9700;
+  color:#121212;
+  border:1px solid #FF9700;
+  border-radius:6px;
+}
+.used{
+  opacity:0.45;
+  pointer-events:none;
+  background:#555 !important;
+  color:#ccc !important;
+  border-color:#555 !important;
+  filter: grayscale(100%);
+}
+
+/* ⚡ EFEK LISTRIK SAAT KLIK COPY */
+.key button:active {
+  box-shadow: 0 0 25px #FF9700, inset 0 0 10px #FF9700;
+  filter: brightness(2);
+  transform: scale(0.95);
+}
+/* 🔥 EFEK COPY STYLE UNTUK LIKE */
+.like-box:active .like-inner{
+  box-shadow: 0 0 25px #FF9700, inset 0 0 10px #FF9700;
+  filter: brightness(1.5);
+  transform: scale(0.95);
+}
+/* === GAME STYLE LOADING BAR === */
+
+.game-loading{
+  width:100%;
+  margin-top:20px;
+}
+
+.track{
+  width:100%;
+  height:6px;
+  background:#121212;
+  border:1px solid #FF9700;
+  border-radius:6px;
+  overflow:hidden;
+}
+
+#loadingBar{
+  height:100%;
+  width:0%;
+  background:#FF9700;
+  position:relative;
+  transition: width .15s linear;
+}
+
+#loadingBar .shine{
+  position:absolute;
+  top:0;
+  right:-20px;
+  width:20px;
+  height:100%;
+  background:#FF9700;
+}
+
+#loadingPercent{
+  margin-top:8px;
+  text-align:center;
+  font-size:13px;
+  color:#ffffff;
+  opacity:.50;
+}
+/* === SALJU HALAMAN PASSWORD === */
+#snow{
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:1;
+  opacity:1;
+  transition:opacity .8s ease;
+  background-image:
+    radial-gradient(2px 2px at 20% 30%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 70% 10%, #fff 99%, transparent),
+    radial-gradient(1px 1px at 40% 60%, #fff 99%, transparent),
+    radial-gradient(2px 2px at 90% 80%, #fff 99%, transparent),
+    radial-gradient(1.5px 1.5px at 10% 90%, #fff 99%, transparent);
+  background-size:200px 200px;
+  animation:snowFall 12s linear infinite;
+}
+
+/* card tetap di atas salju */
+#page-pass .card{
+  position:relative;
+  z-index:2;
+}
+
+/* efek menghilang */
+#snow.hide{
+  opacity:0;
+}
+
+@keyframes snowFall{
+  from{background-position:0 -200px}
+  to{background-position:0 200px}
+}
+@keyframes drop{
+  from{transform:translateY(-300px)}
+  to{transform:translateY(0)}
+}
+
+/* COOLDOWN NOTIF ANIMATION */
+@keyframes slideUp {
+  0% { transform: translate(-50%, -50%); opacity: 1; }
+  20% { transform: translate(-50%, calc(-50% - 40px)); opacity: 1; } /* slide up ~1cm (40px) */
+  80% { transform: translate(-50%, calc(-50% - 40px)); opacity: 1; }
+  100% { transform: translate(-50%, calc(-50% - 40px)); opacity: 0; }
+}
+.key-wrapper{
+  position:relative;
+}
+
+/* OVERLAY LOCK */
+.key-lock{
+  position:absolute;
+  inset:0;
+  background:rgba(120,120,120,0.55); /* abu-abu transparan */
+  backdrop-filter: blur(2px);
+  z-index:10;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:14px;
+}
+
+.lock-box{
+  position:relative;
+  text-align:center;
+  padding:18px 24px;
+  background:rgba(30,30,30,0.85);
+  border:2px solid #888;
+  border-radius:16px;
+}
+
+.lock-title{
+  font-weight:700;
+  font-size:14px;
+  letter-spacing:1px;
+  color:#fff;
+  margin-bottom:8px;
+}
+
+.lock-timer{
+  font-size:22px;
+  font-weight:700;
+  color:#FF9700;
+}
+/* === LIKE TIMER === */
+.like-box{
+  position:absolute;
+  left:50%;
+  bottom:-25px;
+  transform:translateX(-50%);
+
+  background:transparent;   /* WAJIB */
+  padding:0;                /* WAJIB */
+
+  border-radius:22px;
+
+  cursor:pointer;
+  user-select:none;
+  z-index:20;
+}
+.like-box{
+  -webkit-tap-highlight-color: transparent; /* ❌ hilangkan kotak biru */
+  outline: none;
+}
+  z-index:20;
+
+  isolation:isolate;
+}
+.like-box::before{
+  display:none;
+}
+.like-icon{
+  font-size:16px;
+}
+
+#likeCount{
+  font-size:13px;
+  font-weight:700;
+  color:#ffffff;
+}
+.like-inner{
+  border:2px solid #9A9A9A;
+  display:flex;
+  align-items:center;
+  gap:6px;
+
+  padding:6px 14px;
+  border-radius:14px;
+
+  background:#4E4E4E;
+
+  transition:
+    background 0.2s ease,
+    transform 0.18s cubic-bezier(.2,.8,.2,1);
+}
+.like-box.liked .like-inner{
+  background:#121212;
+}
+/* === LIKE AKTIF === */
+.like-box.liked::before{
+  background:#121212; /* ✅ SETELAH DIKLIK */
+}
+
+.like-box.liked .like-inner{
+  background:#121212;
+}
+.like-box:not(:active) .like-inner{
+  transform: scale(1);
+}
+/* === ANTI COPY MANUAL KEY === */
+.key span{
+  user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+  -moz-user-select: none;
+  pointer-events: none;
+}
+</style>
+</head>
+<body>
+<!-- PAGE PASSWORD -->
+<div id="page-pass" class="page">
+  <div id="snow"></div>
+  <div class="card">
+    <h2>PASSWORD</h2>
+    <input id="pw" type="password" placeholder="MASUKKAN PASSWORD"
+  onfocus="playClickSound(); checkBanOnFocus()">
+<button onclick="cek()">MASUK</button>
+  <div id="notifPass" class="notif"></div>
+  </div>
+</div>
+<!-- PAGE LOADING -->
+<div id="page-loading" class="page" style="display:none">
+  <div class="card" style="text-align:center">
+    <h2 style="margin-bottom:10px">LOADING KEY</h2>
+   <div class="game-loading">
+  <div class="track">
+    <div id="loadingBar">
+      <span class="shine"></span>
+    </div>
+  </div>
+  <div id="loadingPercent">0%</div>
+</div>
+  <div style="margin-top:12px;font-size:13px;opacity:.7">
+  Mohon tunggu ...
+</div>
+
+  </div>
+</div>
+<!-- PAGE KEY -->
+<div id="page-key" class="page" style="display:none">
+  <div class="card">
+    <h2>FREE FIRE OLD VERSION KEY</h2>
+    <div id="playerCount">LIVE JUMLAH PLAYER DI WEB :  <span id="count">0</span></div>
+  <div id="notifKey" class="notif ok"></div>
+<div class="key-wrapper">
+  <div id="keyLock" class="key-lock">
+  <div class="lock-box">
+    <div class="lock-title">SEBENTAR LAGI DIBUKA</div>
+    <div id="lockTimer" class="lock-timer">00:30</div>
+    <div class="lock-title" id="lockMessage">SEMOGA BERUNTUNG</div>
+    <!-- LIKE NEMPEL -->
+    <div id="likeBox" class="like-box">
+  <div class="like-inner">
+    <span class="like-icon">👍</span>
+    <span id="likeCount">9</span>
+  </div>
+</div>
+  </div>
+</div>
+
+  <div id="keys" class="keys"></div>
+</div>
+
+  </div>
+</div>
+<!-- COOLDOWN NOTIF -->
+<div id="cooldownNotif" class="notif err" style="position:fixed; top:50%; left:50%; transform:translate(-50%, -75%); display:none; z-index:9999;"></div>
+<!-- SOUND (BISA DITUMBUK) -->
+<audio id="sndOk" src="https://excessive-coffee-qncov0tmqk.edgeone.app/km_20260101_360p_30f_20260102_155447.mp3" preload="auto"></audio>
+<audio id="sndLike" src="https://rubber-lime-yd0eyv5ars.edgeone.app/VID_20260102_084223%20(mp3cut.net).mp3" preload="auto"></audio>
+
+<audio id="sndErr" src="https://imperial-rose-ddeq0w9gmz.edgeone.app/dry-fart%20(1).mp3" preload="auto"></audio>
+<audio id="sndCopy" src="https://varied-plum-g08azcqtzk.edgeone.app/VID_20251231_093929%20(mp3cut.net).mp3" preload="auto"></audio>
+<audio id="sndClickPassword" src="https://varied-plum-g08azcqtzk.edgeone.app/VID_20251231_093929%20(mp3cut.net).mp3" preload="auto"></audio>
+<audio id="sndClickMulai" src="https://slight-purple-penqwmehu1.edgeone.app/VID_20251231_094747.mp3" preload="auto"></audio>
+<audio id="sndTimerEnd"
+src="https://strong-purple-f9gobkgi4g.edgeone.app/gta-v-notification%20(mp3cut.net).mp3"
+preload="auto"></audio>
+<!-- SOUND UNLOCK -->
+<audio id="sndUnlock"
+src="https://boiling-amber-wkhrornnnx.edgeone.app/VID_20251231_092223.mp3"
+preload="auto"></audio>
+<script>
+
+// ===== GLOBAL BAN CONFIG (FIX ONLY) =====
+const BAN_KEY = "deviceBanUntil";
+const BAN_DURATION = 1.2 * 60 * 1000; // 1.2 menit
+/* =========================
+   LIKE REAL-TIME SYSTEM
+   ========================= */
+const likeBox   = document.getElementById("likeBox");
+const likeCount = document.getElementById("likeCount");
+
+let likePercent = 87; // LIKE = 67% dari player
+let likeTotal   = 0;
+
+let userLiked = false;
+let userLikeBonus = 0; // +1 kalau user like, 0 kalau batal
+
+let likeInterval = null;
+
+likeCount.innerText = likeTotal;
+
+/* RANDOM NAIK LIKE (AUTO USER LAIN) */
+function startAutoLike(){
+  likeInterval = setInterval(()=>{
+    const delay = Math.random() * 4000 + 1500; // beda waktu tiap naik
+    setTimeout(()=>{
+      likeTotal += Math.floor(Math.random() * 2) + 1; // +1 / +2
+      likeCount.innerText = likeTotal;
+    }, delay);
+  }, 5000);
+}
+
+/* USER LIKE (1x SAJA) */
+likeBox.addEventListener("click", ()=>{
+  play("sndLike");
+
+  if (!userLiked) {
+    // 👍 USER LIKE
+    userLiked = true;
+    userLikeBonus = 1;
+    likeBox.classList.add("liked");
+  } else {
+    // 👎 USER BATAL LIKE
+    userLiked = false;
+    userLikeBonus = 0;
+    likeBox.classList.remove("liked");
+  }
+
+  // update tampilan
+  likeCount.innerText = likeTotal + userLikeBonus;
+});
+
+
+/* MUNCUL & HILANG SESUAI TIMER */
+function handleLikeVisibility(){
+  if(isLocked){
+    likeBox.style.display = "flex";
+    if(!likeInterval){
+      startAutoLike();
+    }
+  }else{
+    likeBox.style.display = "none";
+    clearInterval(likeInterval);
+  }
+}
+
+/* CEK SETIAP DETIK */
+setInterval(handleLikeVisibility,1000);
+</script>
+<script>
+const PASSWORD = "NEXUS";
+
+const keyList = [
+"9505ab65-47bf-4d8e-bd67-f614033fdc73",
+"043990ed-a1c2-4f48-a1fd-357576e5f147",
+"70eb3148-937a-4b2e-abb6-717db9747451",
+"63b127c7-5375-4d6a-afb9-d529cf406011",
+"5e51046a-0a57-4bf8-badf-18c32ee97413",
+"1b9a7875-36fb-4a8b-84fc-c350d1a116d5",
+"9de29a85-e7c7-4978-8895-1380d9d01e8b",
+"607b7f68-f9d1-4c58-b50b-9d58e798acb6",
+"e007d58c-b304-4df2-b17f-cb1e5ece5d7a",
+"ea9f18cc-9e2a-441a-a43c-a652c9d2337d",
+"2439e3fc-feb1-4029-903f-e96c4ecfe3e7",
+"c1167c0e-8e7c-46a9-8e17-a0359e02e63b",
+"64d1808e-ac0a-4438-ab3f-3f9559088345",
+"c377d3af-b781-4a6f-870f-3a1d78be805d",
+"7804bfe9-30eb-4bac-9374-15afbbd67e80",
+"f3391176-bf70-4a04-a3fc-4c6a08a482f9",
+"79e8b2df-4631-4922-b3c7-990463fe94df",
+"62c807a3-d506-4ee6-a3d7-a839e7df92b6",
+"b1715a79-b709-42e0-885a-e0957a5566dc",
+"f81693d9-e82d-48ad-9f23-5cf7effa82d8",
+];
+
+let playerInterval; // untuk menyimpan interval update angka player
+let isCooldown = false; // cooldown flag for copying keys
+let isLocked = true;
+let basePlayerCount = 0;
+let lastPlayerCount = 0;
+
+function play(id){
+  const a = document.getElementById(id);
+  if(a){
+    a.pause();
+    a.currentTime = 0;
+    a.play();
+  }
+}
+function armAudio(id){
+  const a = document.getElementById(id);
+  if(!a) return;
+
+  a.muted = true;
+  a.play().then(()=>{
+    a.pause();
+    a.currentTime = 0;
+    a.muted = false;
+  }).catch(()=>{});
+}
+function cek(){
+  // ⛔ CEK BAN DEVICE (WAJIB PALING ATAS)
+  const banUntil = localStorage.getItem(BAN_KEY);
+
+  if(banUntil && Date.now() < banUntil){
+
+  // 🔄 reset notif timer sebelumnya
+  const cooldownNotif = document.getElementById("cooldownNotif");
+  if(cooldownNotif){
+    cooldownNotif.style.display = "none";
+    cooldownNotif.innerText = "";
+  }
+
+  // 🔒 UBAH PLACEHOLDER PASSWORD SAAT BAN
+  const pwInput = document.getElementById("pw");
+  pwInput.value = "";
+  pwInput.placeholder = "PASSWORD DI BAN SEMENTARA";
+  pwInput.disabled = true;
+
+  const notif = document.getElementById("notifPass");
+  notif.style.display = "block";
+  notif.className = "notif err";
+  startBanTimerPassword(notif, banUntil);
+  play("sndErr");
+  return;
+}
+  // 🔊 SOUND SAAT KLIK MASUK
+  play("sndClickMulai");
+
+  const pwInput = document.getElementById("pw");
+  const notif = document.getElementById("notifPass");
+
+  notif.style.display = "block";
+
+  if(pwInput.value.trim() === PASSWORD){
+    notif.className = "notif ok";
+    notif.innerText = "PASSWORD BENAR";
+
+    // 🔊 SOUND BENAR
+play("sndOk");
+
+// ✅ IZINKAN AUDIO TIMER DARI SINI
+armAudio("sndTimerEnd");
+
+hideSnow();
+
+    // TAMPILKAN LOADING
+    document.getElementById("page-pass").style.display = "none";
+    document.getElementById("page-loading").style.display = "flex";
+
+const bar = document.getElementById("loadingBar");
+const percent = document.getElementById("loadingPercent");
+
+let p = 0;
+
+const interval = setInterval(()=>{
+  p += Math.random() * 2.5; // biar ga linear kaya game
+  if(p >= 100){
+    p = 100;
+    clearInterval(interval);
+  }
+  bar.style.width = p + "%";
+  percent.innerText = Math.floor(p) + "%";
+}, 60);
+
+// LOADING 4 DETIK
+setTimeout(()=>{
+  document.getElementById("page-loading").style.display = "none";
+
+  // 🔊 SOUND UNLOCK SETELAH LOADING SELESAI
+  play("sndUnlock");
+
+  // 💨 TAMPILKAN ASAP
+  const smoke = document.getElementById("smoke");
+if(smoke){
+  smoke.style.display = "block";
+}
+
+  // ASAP 1 DETIK
+  setTimeout(()=>{
+    if(smoke){
+  smoke.style.display = "none";
+}
+    document.getElementById("page-key").style.display = "flex";
+    tampilKey();
+  }, 1050);
+}, 4500);
+
+  }else{
+    notif.className = "notif err";
+    notif.innerText = "⚠️ PASSWORD SALAH ⚠️";
+
+    // 🔊 SOUND SALAH
+    play("sndErr");
+  }
+}
+
+function tampilKey(){
+  // PILIH KELOMPOK ACAK (1,2,atau3) SEKALI SAAT MASUK WEB
+  const kelompok = Math.floor(Math.random() * 3) + 1;
+  let min, max;
+  if(kelompok === 1){
+    min = 1;
+    max = 2;
+  }else if(kelompok === 2){
+    min = 1;
+    max = 2;
+  }else{
+    min = 1;
+    max = 2;
+  }
+
+  // CEK WAKTU (JAM PENGGUNA) UNTUK PENGURANGAN
+  const jam = new Date().getHours();
+  const isNight = (jam >= 20 || jam <= 7);
+// ===== BASELINE PLAYER (ANGKA NORMAL SEKALI SAJA) =====
+basePlayerCount = Math.floor(Math.random() * (max - min + 1)) + min;
+
+if(isNight){
+  basePlayerCount = Math.floor(basePlayerCount * 0.2);
+}
+
+// ===== BOOST BERTAHAP SAAT TIMER MASIH ADA =====
+let boostPercent = 10; // % AWAL (100%)
+let boostMax     = 12; // % MAKS (101%)
+let boostStep    = 4;   // naik 50% tiap update
+
+lastPlayerCount = Math.floor(basePlayerCount * (boostPercent / 100));
+document.getElementById("count").innerText = lastPlayerCount;
+likeTotal = Math.floor(lastPlayerCount * (likePercent / 100));
+likeCount.innerText = likeTotal;
+
+likeTotal = Math.floor(lastPlayerCount * (likePercent / 100));
+likeCount.innerText = likeTotal;
+
+// 👍 HITUNG LIKE PERTAMA KALI
+likeTotal = Math.floor(lastPlayerCount * (likePercent / 100));
+likeCount.innerText = likeTotal;
+
+
+lastPlayerCount = Math.floor(basePlayerCount * 2.23); // BOOST 100%
+document.getElementById("count").innerText = lastPlayerCount;
+  // FUNGSI UNTUK UPDATE ANGKA
+  function updateCount(){
+  let count;
+
+  if(isLocked){
+    // 📈 NAIK PERSEN SELAMA TIMER AKTIF
+if (boostPercent < boostMax) {
+  boostPercent += boostStep;
+}
+
+  if(isLocked){
+  const naikTurun = Math.floor(Math.random() * 7) - 3; // -3 s/d +3
+  count = lastPlayerCount + naikTurun;
+
+  const maxLock = Math.floor(basePlayerCount * 2.5);
+  const minLock = Math.floor(basePlayerCount * 2);
+
+  if(count > maxLock) count = maxLock;
+  if(count < minLock) count = minLock;
+}
+
+    // batas maksimal biar masuk akal
+    const maxLock = Math.floor(basePlayerCount * 2.5);
+    if(count > maxLock){
+      count = maxLock;
+    }
+
+  } else {
+    // 🔓 MODE NORMAL → RANDOM BEBAS
+    count = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    if(isNight){
+      count = Math.floor(count * 0.2);
+    }
+  }
+
+  lastPlayerCount = count;
+  document.getElementById("count").innerText = count;
+  // ===== LIKE IKUT PLAYER TAPI TIDAK BOLEH TURUN =====
+const likeFromPlayer = Math.floor(count * (likePercent / 100));
+
+if (likeFromPlayer > likeTotal) {
+  likeTotal = likeFromPlayer;
+  likeCount.innerText = likeTotal;
+}
+
+  likeTotal = Math.floor(count * (likePercent / 100));
+likeCount.innerText = likeTotal;
+}
+  // MULAI INTERVAL UNTUK GANTI ANGKA SETIAP 3 DETIK
+  playerInterval = setInterval(updateCount, 3000);
+
+  const box = document.getElementById("keys");
+  box.innerHTML = "";
+
+  keyList.forEach(k=>{
+    const d = document.createElement("div");
+    d.className = "key";
+
+    const s = document.createElement("span");
+    s.innerText = k;
+
+    const b = document.createElement("button");
+    b.innerText = "COPY";
+
+    b.onclick = ()=>{
+      if(isCooldown){
+        showCooldownNotif();
+        return;
+      }
+      if(b.classList.contains("used")) return;
+      navigator.clipboard.writeText(k);
+      b.classList.add("used");
+      b.innerText = "USED";
+
+      const n = document.getElementById("notifKey");
+      n.style.display = "block";
+      n.className = "notif ok";
+      n.innerHTML = `
+  <div style="margin-bottom:8px;font-weight:600">
+    SILAHKAN REGISTRASI KEY DI WEB INI
+  </div>
+
+  <a href="https://register.luna-corp.online/register" target="_blank">
+    <button style="
+      margin:8px 0;
+      padding:10px 16px;
+      border:1px solid #FF9700;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      background:#FF9700;
+      color:#121212;
+    ">
+      KLIK WEB
+    </button>
+  </a>
+
+  <div style="font-size:12px;opacity:.85">
+    𝟭 𝗞𝗘𝗬 𝟭 × 𝗣𝗔𝗞𝗔𝗜 𝗖𝗘𝗣𝗘𝗧 𝗖𝗘𝗣𝗘𝗧𝗔𝗡
+  </div>
+`;
+
+      play("sndCopy");
+
+      // Start cooldown
+      isCooldown = true;
+      setTimeout(() => {
+        isCooldown = false;
+      }, 3300);
+    };
+
+    d.append(s,b);
+    box.appendChild(d);
+  });
+}
+
+function showCooldownNotif(){
+  const notif = document.getElementById("cooldownNotif");
+  notif.innerText = "SABAR LAGI COOLDOWN";
+  notif.style.display = "block";
+  notif.style.animation = "none"; // reset animation
+  setTimeout(() => {
+    notif.style.animation = "slideUp 1.5s ease-out forwards";
+  }, 10);
+  setTimeout(() => {
+    notif.style.display = "none";
+  }, 2000);
+}
+
+function hideSnow(){
+  const snow = document.getElementById("snow");
+  if(snow){
+    snow.classList.add("hide");
+  }
+}
+function playClickSound(){
+  play("sndClickPassword");
+}
+/* =========================
+   TIMER REAL-TIME FINAL
+   ========================= */
+// === ANTI CURANG JAM (PERMANEN) ===
+let lastRealTime = Date.now();
+let timerKilled = false;
+function checkBanOnFocus(){
+  const banUntil = localStorage.getItem(BAN_KEY);
+
+  if(banUntil && Date.now() < banUntil){
+    const pwInput = document.getElementById("pw");
+    pwInput.value = "";
+    pwInput.placeholder = "MAKANYA JUJUR BRO, SABAR YA";
+    pwInput.disabled = true;
+
+    const notif = document.getElementById("notifPass");
+    notif.style.display = "block";
+    notif.className = "notif err";
+    startBanTimerPassword(notif, banUntil);
+
+    play("sndErr");
+  }
+}
+
+// =========================
+// MASTER TIMER (WIB)
+// =========================
+
+// SET JAM BUKA (WIB)
+const WIB_START_HOUR = 12;
+const WIB_START_MIN  = 00;
+const WIB_START_SEC  = 0;
+// DURASI LOCK (detik)
+const TIMER_DURATION = 0;
+
+// WIB = UTC+7
+const WIB_OFFSET = 7 * 60; // menit
+
+function getWIBStartTimeToday(){
+  const now = new Date();
+
+  // ambil tanggal hari ini dalam UTC
+  const utcYear  = now.getUTCFullYear();
+  const utcMonth = now.getUTCMonth();
+  const utcDate  = now.getUTCDate();
+
+  // WIB → UTC
+  return new Date(Date.UTC(
+    utcYear,
+    utcMonth,
+    utcDate,
+    WIB_START_HOUR - 7,
+    WIB_START_MIN,
+    WIB_START_SEC
+  ));
+}
+
+const startTime = getWIBStartTimeToday().getTime();
+const endTime   = startTime + TIMER_DURATION * 1000;
+
+const lock = document.getElementById("keyLock");
+const timerText = document.getElementById("lockTimer");
+
+let timerLoop = null;
+
+function updateTimer(){
+  if(timerKilled) return; // ⛔ mati permanen
+
+  const now = Date.now();
+  const selisih = now - lastRealTime;
+
+  // 🚨 DETEKSI JAM DIMAJUIN (1 DETIK PUN)
+  if(selisih > 1100){
+  timerKilled = true;
+  clearInterval(timerLoop);
+
+  localStorage.setItem(
+    BAN_KEY,
+    Date.now() + BAN_DURATION
+  );
+
+  play("sndErr");
+
+  const notif = document.getElementById("cooldownNotif");
+  notif.innerText = "BALIKIN KE SEMULA GAK JAM LO 😠🫵";
+  notif.style.display = "block";
+
+  // 🔥 UBAH TEKS PESAN
+  const msg = document.getElementById("lockMessage");
+  if(msg){
+    msg.innerText = "🙏 SILAHKAN REFRESH WEB 🙏";
+  }
+
+  timerText.innerText = "CURANG";
+  return;
+}
+
+  lastRealTime = now;
+
+  let sisa = Math.ceil((endTime - now) / 1000);
+
+  if (sisa <= 0){
+    clearInterval(timerLoop);
+    lock.style.display = "none";
+    play("sndTimerEnd");
+
+    setTimeout(()=> isLocked = false, 500);
+    return;
+  }
+
+  const menit = Math.floor(sisa / 60);
+  const detik = sisa % 60;
+
+  timerText.innerText =
+    (menit < 10 ? "0"+menit : menit) + ":" +
+    (detik < 10 ? "0"+detik : detik);
+}
+// ===== START TIMER SETELAH PAGE KEY MUNCUL =====
+
+if (Date.now() < endTime) {
+  lock.style.display = "flex";
+  isLocked = true;
+
+  const msg = document.getElementById("lockMessage");
+  if (msg) {
+    msg.innerText = "SEMOGA BERUNTUNG";
+  }
+
+  updateTimer();
+  timerLoop = setInterval(updateTimer, 1000);
+} else {
+  lock.style.display = "none";
+  isLocked = false;
+}
+function startBanTimerPassword(el, banUntil){
+  function update(){
+    const sisa = Math.ceil((banUntil - Date.now()) / 1000);
+
+    if(sisa <= 0){
+  localStorage.removeItem(BAN_KEY);
+
+  const pwInput = document.getElementById("pw");
+  pwInput.placeholder = "Masukkan password";
+  pwInput.disabled = false;
+
+  el.innerText = "SILAHKAN MASUK KEMBALI";
+  el.className = "notif ok";
+  return;
+}
+
+    const m = Math.floor(sisa / 60);
+    const d = sisa % 60;
+
+    el.innerText =
+      "DEVICE DIBAN SEMENTARA " +
+      (m < 10 ? "0"+m : m) + ":" +
+      (d < 10 ? "0"+d : d);
+  }
+
+  update();
+  setInterval(update, 1000);
+}
+function runTimer() {
+  const now = Date.now();
+
+  if (now < startTime) {
+    showLock();
+    updateCountdown(startTime - now, "AKAN TERBUKA DALAM");
+  }
+  else if (now < endTime) {
+    showLock();
+    updateCountdown(endTime - now, "TERBUKA SELAMA");
+  }
+  else {
+    unlockKey();
+    clearInterval(timerLoop);
+  }
+}
+</script>
+<!-- EFEK ASAP -->
+<div id="smoke" style="
+  display:none;
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(circle at 30% 50%, rgba(255,255,255,.6), transparent 60%),
+    radial-gradient(circle at 70% 50%, rgba(255,255,255,.45), transparent 70%);
+  animation:smokeMove 1s ease-out forwards;
+  z-index:9998;
+  pointer-events:none;
+"></div>
+<style>
+@keyframes smokeMove{
+  0%{opacity:0;transform:scale(1);}
+  30%{opacity:1;}
+  100%{opacity:0;transform:scale(2.4);}
+}
+
+@keyframes likePop{
+  0%{transform:translateX(-50%) scale(1)}
+  50%{transform:translateX(-50%) scale(1.25)}
+  100%{transform:translateX(-50%) scale(1)}
+}
+</style>
+<script>
+document.addEventListener("contextmenu", function(e){
+  e.preventDefault();
+});
+</script>
+<script>
+["copy","cut","selectstart"].forEach(evt=>{
+  document.addEventListener(evt, e=>{
+    // IZINKAN COPY HANYA VIA TOMBOL
+    if(e.target.closest("button")) return;
+    e.preventDefault();
+  });
+});
+</script>
